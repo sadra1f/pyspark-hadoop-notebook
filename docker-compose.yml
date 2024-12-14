@@ -1,0 +1,82 @@
+services:
+  jupyter:
+    image: quay.io/jupyter/pyspark-notebook:python-3.11
+    container_name: jupyter-notebook
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./work:/home/jovyan/work
+    command: "start-notebook.sh --NotebookApp.token="
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  namenode: &hadoop
+    build:
+      context: .
+    container_name: hdfs-namenode
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+      - "9000:9000"
+      - "9870:9870"
+    volumes:
+      - namenode_data:/data
+    command: >
+      bash -c "hdfs namenode & yarn resourcemanager "
+    hostname: hdfs-namenode
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  datanode-1:
+    <<: *hadoop
+    container_name: hadoop-datanode-1
+    hostname: datanode-1
+    depends_on:
+      - namenode
+    command: >
+      bash -c "hdfs datanode & yarn nodemanager "
+    ports:
+      - "9864"
+    volumes:
+      - datanode_1_data:/data
+    links:
+      - namenode:hdfs-namenode
+
+  datanode-2:
+    <<: *hadoop
+    container_name: hadoop-datanode-2
+    hostname: datanode-2
+    depends_on:
+      - namenode
+    command: >
+      bash -c "hdfs datanode & yarn nodemanager "
+    ports:
+      - "9864"
+    volumes:
+      - datanode_2_data:/data
+    links:
+      - namenode:hdfs-namenode
+
+  secondarynamenode:
+    <<: *hadoop
+    container_name: hadoop-secondarynamenode
+    command: hdfs secondarynamenode
+    ports:
+      - "9868:9868"
+    volumes:
+      - secondarynamenode_data:/data
+    links:
+      - namenode:hdfs-namenode
+
+volumes:
+  namenode_data: {}
+  datanode_1_data: {}
+  datanode_2_data: {}
+  secondarynamenode_data: {}

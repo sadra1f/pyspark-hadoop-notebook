@@ -1,0 +1,6 @@
+temp/
+work/*
+!work/.gitkeep
+*.zip
+*.tar.gz
+*.tar.xz
