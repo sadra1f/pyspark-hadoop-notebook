@@ -3,6 +3,8 @@ services:
     image: quay.io/jupyter/pyspark-notebook:python-3.11
     container_name: jupyter-notebook
     restart: unless-stopped
+    environment:
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
     ports:
       - "8888:8888"
     volumes:
