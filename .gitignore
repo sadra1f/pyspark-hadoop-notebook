@@ -1,6 +1,7 @@
 temp/
 work/*
-!work/.gitkeep
+!work/README.md
+!work/*.example.ipynb
 *.zip
 *.tar.gz
 *.tar.xz
