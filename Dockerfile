@@ -28,6 +28,10 @@ VOLUME /data
 COPY docker/start-yarn.sh /usr/local/bin/start-yarn.sh
 RUN chmod +x /usr/local/bin/start-yarn.sh
 
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 22 9000 9870 9866 9867 9864 9868 8088
 
+ENTRYPOINT [ "/entrypoint.sh" ]
 CMD ["hdfs"]
